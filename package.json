@@ -1,9 +1,9 @@
 {
   "name": "homebridge-mqttthing-ng",
-  "displayName": "MQTT Thing NG",
+  "displayName": "MQTT Thing NG (v2)",
   "version": "2.0.0-beta.1",
-  "description": "Next‑generation rewrite of mqttthing for Homebridge v2 – expose MQTT topics as full‑featured HomeKit accessories.",
-  "author": "fxPPC",
+  "description": "Next-generation rewrite of mqttthing for Homebridge v2 – expose MQTT topics as full-featured HomeKit accessories.",
+  "author": "fxPPC, Rumours TheServer & Contributors",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -13,7 +13,12 @@
     "url": "https://github.com/fxPPC/homebridge-mqttthing-ng/issues"
   },
   "homepage": "https://github.com/fxPPC/homebridge-mqttthing-ng#readme",
-  "keywords": ["homebridge-plugin", "homebridge", "mqtt", "homekit"],
+  "keywords": [
+    "homebridge-plugin",
+    "homebridge",
+    "mqtt",
+    "homekit"
+  ],
   "engines": {
     "node": ">=18.0.0 <23.0.0",
     "homebridge": "^1.8.0 || ^2.0.0-beta.0"
@@ -34,8 +39,8 @@
   },
   "devDependencies": {
     "eslint": "^9.25.1",
-    "@typescript-eslint/parser": "^8.30.1",         // updated for ESLint 9 compatibility  [oai_citation_attribution:3‡npm](https://www.npmjs.com/package/%40typescript-eslint/parser?utm_source=chatgpt.com)
-    "@typescript-eslint/eslint-plugin": "^8.30.1",  // updated for ESLint 9 compatibility  [oai_citation_attribution:4‡npm](https://www.npmjs.com/package/%40typescript-eslint/eslint-plugin?utm_source=chatgpt.com)
+    "@typescript-eslint/parser": "^8.30.1",
+    "@typescript-eslint/eslint-plugin": "^8.30.1",
     "@types/jest": "^29.5.12",
     "@types/mqtt": "^3.0.13",
     "@types/node": "^20.11.0",
