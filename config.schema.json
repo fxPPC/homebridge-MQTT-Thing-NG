@@ -1,16 +1,164 @@
 {
-  "pluginAlias": "ExampleHomebridgePlugin",
+  "pluginAlias": "MQTTThingNGPlatform",
   "pluginType": "platform",
   "singular": true,
-  "strictValidation": false,
   "schema": {
     "type": "object",
+    "required": ["broker", "accessories"],
     "properties": {
-      "name": {
-        "title": "Name",
-        "type": "string",
-        "required": true,
-        "default": "Example Dynamic Platform"
+      "broker": {
+        "title": "MQTT Broker Settings",
+        "type": "object",
+        "required": ["host", "port"],
+        "properties": {
+          "url": {
+            "type": "string",
+            "title": "Broker URL (overrides host/port)"
+          },
+          "host": {
+            "type": "string",
+            "title": "Host",
+            "default": "localhost"
+          },
+          "port": {
+            "type": "integer",
+            "title": "Port",
+            "default": 1883
+          },
+          "tls": {
+            "type": "boolean",
+            "title": "Use TLS (mqtts)",
+            "default": false
+          },
+          "username": {
+            "type": "string",
+            "title": "Username",
+            "default": ""
+          },
+          "password": {
+            "type": "string",
+            "title": "Password",
+            "default": ""
+          },
+          "clientId": {
+            "type": "string",
+            "title": "Client ID (optional)",
+            "default": ""
+          }
+        }
+      },
+      "accessories": {
+        "title": "Accessories",
+        "type": "array",
+        "items": {
+          "title": "Accessory",
+          "type": "object",
+          "required": ["name", "type", "topics"],
+          "properties": {
+            "name": {
+              "type": "string",
+              "title": "Accessory Name"
+            },
+            "type": {
+              "type": "string",
+              "title": "Accessory Type",
+              "oneOf": [
+                { "title": "Switch", "const": "switch" },
+                { "title": "Lightbulb", "const": "lightbulb" },
+                { "title": "Outlet", "const": "outlet" },
+                { "title": "Stateless Switch", "const": "stateless_switch" },
+                { "title": "Doorbell", "const": "doorbell" },
+                { "title": "Contact Sensor", "const": "contact_sensor" },
+                { "title": "Occupancy Sensor", "const": "occupancy_sensor" },
+                { "title": "Motion Sensor", "const": "motion_sensor" },
+                { "title": "Leak Sensor", "const": "leak_sensor" },
+                { "title": "Smoke Sensor", "const": "smoke_sensor" },
+                { "title": "Carbon Monoxide Sensor", "const": "carbon_monoxide_sensor" },
+                { "title": "Carbon Dioxide Sensor", "const": "carbon_dioxide_sensor" },
+                { "title": "Temperature Sensor", "const": "temperature_sensor" },
+                { "title": "Humidity Sensor", "const": "humidity_sensor" },
+                { "title": "Air Quality Sensor", "const": "air_quality_sensor" },
+                { "title": "Light Sensor", "const": "light_sensor" },
+                { "title": "Battery Service", "const": "battery_service" },
+                { "title": "Door", "const": "door" },
+                { "title": "Garage Door", "const": "garage_door" },
+                { "title": "Window", "const": "window" },
+                { "title": "Window Covering", "const": "window_covering" },
+                { "title": "Lock", "const": "lock" },
+                { "title": "Security System", "const": "security_system" },
+                { "title": "Fan", "const": "fan" },
+                { "title": "Heater Cooler", "const": "heater_cooler" },
+                { "title": "Thermostat", "const": "thermostat" },
+                { "title": "Valve", "const": "valve" },
+                { "title": "Faucet", "const": "faucet" },
+                { "title": "Irrigation", "const": "irrigation" },
+                { "title": "Television", "const": "television" },
+                { "title": "Speaker", "const": "speaker" }
+              ]
+            },
+            "topics": {
+              "type": "object",
+              "title": "Characteristic Topics",
+              "description": "Map each characteristic name to its MQTT settings",
+              "additionalProperties": {
+                "$ref": "#/definitions/CharacteristicTopic"
+              }
+            },
+            "onValue": {
+              "type": ["string", "number", "boolean"],
+              "title": "On Value",
+              "default": 1
+            },
+            "offValue": {
+              "type": ["string", "number", "boolean"],
+              "title": "Off Value",
+              "default": 0
+            },
+            "history": {
+              "type": "boolean",
+              "title": "Enable History Logging",
+              "default": false
+            }
+          }
+        }
+      }
+    },
+    "definitions": {
+      "CharacteristicTopic": {
+        "type": "object",
+        "properties": {
+          "get": {
+            "type": "string",
+            "title": "Subscribe Topic"
+          },
+          "set": {
+            "type": "string",
+            "title": "Publish Topic"
+          },
+          "parse": {
+            "type": "string",
+            "title": "parse() Function (JS)"
+          },
+          "apply": {
+            "type": "string",
+            "title": "apply() Function (JS)"
+          },
+          "jsonPath": {
+            "type": "string",
+            "title": "JSONPath Expression"
+          },
+          "qos": {
+            "type": "integer",
+            "title": "MQTT QoS",
+            "enum": [0, 1, 2],
+            "default": 0
+          },
+          "retain": {
+            "type": "boolean",
+            "title": "Retain",
+            "default": false
+          }
+        }
       }
     }
   }
