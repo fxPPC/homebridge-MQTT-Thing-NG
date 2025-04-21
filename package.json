@@ -38,6 +38,7 @@
     "fakegato-history": "^0.6.7"
   },
   "devDependencies": {
+    "homebridge": "^2.0.0-beta.0",
     "eslint": "^9.25.1",
     "@typescript-eslint/parser": "^8.30.1",
     "@typescript-eslint/eslint-plugin": "^8.30.1",
