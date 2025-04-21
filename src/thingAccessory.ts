@@ -1,3 +1,13 @@
+// src/thingAccessory.ts
+//
+// Fully updated “Thing Accessory” implementation for MQTT Thing NG
+// - Full serviceMap covering ~30 accessory types
+// - Per‐characteristic topic filtering (get/set/parse/apply/jsonPath/qos/retain)
+// - Guarded characteristic routing
+// - VM2 sandboxed apply/parse with 100 ms timeout
+// - FakeGato history logging for supported types
+// - Graceful shutdown removing MQTT listeners
+
 import {
   Logger,
   PlatformAccessory,
@@ -9,7 +19,7 @@ import {
 import { JSONPath } from 'jsonpath-plus';
 import { VM } from 'vm2';
 import { MQTTConnection } from './services/mqtt';
-import { EveHistory } from '@homebridge/plugin-eve-history';
+import FakeGatoHistoryService from 'fakegato-history';
 
 export type AccessoryType =
   | 'switch' | 'lightbulb' | 'outlet'
@@ -67,8 +77,8 @@ export function buildServiceMap(hap: HAP): Record<AccessoryType, ServiceDescript
     temperature_sensor:     { create: () => new S.TemperatureSensor(),    chars: ['CurrentTemperature'], historyType: 'thermo' },
     humidity_sensor:        { create: () => new S.HumiditySensor(),       chars: ['CurrentRelativeHumidity'] },
     air_quality_sensor:     { create: () => new S.AirQualitySensor(),     chars: ['AirQuality'] },
-    light_sensor:           { create: () => new S.LightSensor(),         chars: ['CurrentAmbientLightLevel'] },
-    battery_service:        { create: () => new S.BatteryService(),      chars: ['BatteryLevel', 'ChargingState', 'StatusLowBattery'] },
+    light_sensor:           { create: () => new S.LightSensor(),          chars: ['CurrentAmbientLightLevel'] },
+    battery_service:        { create: () => new S.BatteryService(),       chars: ['BatteryLevel', 'ChargingState', 'StatusLowBattery'] },
     door:                   { create: () => new S.Door(),                chars: ['TargetPosition', 'CurrentPosition', 'PositionState'], historyType: 'door' },
     garage_door:            { create: () => new S.GarageDoorOpener(),    chars: ['TargetDoorState', 'CurrentDoorState', 'ObstructionDetected'], historyType: 'door' },
     window:                 { create: () => new S.Window(),              chars: ['TargetPosition', 'CurrentPosition', 'PositionState'] },
@@ -91,7 +101,7 @@ export function createAccessory(
   def: AccessoryDefinition,
   ctx: { log: Logger; Service: typeof Service; Characteristic: typeof Characteristic; apiHap: HAP; }
 ): void {
-  const { log, Service: S, Characteristic: C, apiHap } = ctx;
+  const { log, Service: S, Characteristic: C } = ctx;
   const hap = { Service: S, Characteristic: C } as HAP;
   const serviceMap = buildServiceMap(hap);
   const desc = serviceMap[def.type];
@@ -107,10 +117,14 @@ export function createAccessory(
     service = accessory.addService(desc.create(hap), def.name);
   }
 
-  // Eve History if requested
-  let history: EveHistory | undefined;
+  // FakeGato history if requested
+  let history: FakeGatoHistoryService | undefined;
   if (def.history && desc.historyType) {
-    history = new EveHistory(accessory, { log, type: desc.historyType });
+    history = new FakeGatoHistoryService(desc.historyType, accessory, {
+      storage: 'fs',
+      filename: `${accessory.UUID}.json`,
+      log,
+    });
   }
 
   const mqttClient = MQTTConnection.get().client;
